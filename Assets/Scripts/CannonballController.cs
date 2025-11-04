@@ -4,26 +4,21 @@ public class CannonballController : MonoBehaviour
 {
     public float lifespan;
 
-    public GameObject leftCannon;
-    public GameObject rightCannon;
-    public GameObject cannonBall;
-    
+    // Start is called before the first frame update
     void Start()
     {
-        
+        //After lifespan seconds, this object will be destroyed
         Destroy(gameObject, lifespan);
     }
 
-    private void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(Input.GetMouseButtonDown(0))
+        CannonballController cannonball = collision.gameObject.GetComponent<CannonballController>();
+        if (cannonball != null)
         {
-            Instantiate(cannonBall, leftCannon.transform.position, Quaternion.identity);
+            Destroy(gameObject);
         }
 
-        if(Input.GetMouseButtonDown(1))
-        {
-            Instantiate(cannonBall, rightCannon.transform.position, Quaternion.identity);
-        }
+
     }
 }
