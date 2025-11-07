@@ -13,8 +13,8 @@ public class ScoreboardController : MonoBehaviour
     {
         //When we access Score - we're actually returning the value of the private "score" variable
         get 
-        { 
-            return score; 
+        {
+            return score;
         }
 
         //The contents inside the section of a property are run every time we make changes to the value of the property
@@ -23,6 +23,7 @@ public class ScoreboardController : MonoBehaviour
         {
             score = value;
             scoreText.text = $"Score: {score}";
+            //scoreText.text = "Score: " + score;
         }
     }
 }
