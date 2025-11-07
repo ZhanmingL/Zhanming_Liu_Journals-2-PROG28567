@@ -7,7 +7,7 @@ public class AngularRotating : MonoBehaviour
     void Start()
     {
         rigidbody2D = transform.GetComponent<Rigidbody2D>();
-        rigidbody2D.angularVelocity = 120;
+        rigidbody2D.angularVelocity = 120f;
     }
 
     // Update is called once per frame

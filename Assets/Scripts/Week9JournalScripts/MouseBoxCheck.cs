@@ -11,23 +11,15 @@ public class MouseBoxCheck : MonoBehaviour
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         transform.position = mousePos;
 
-        RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxSize, 0, Vector2.zero, 0, targetLayer);
-        check = hit.collider != null;
-
-        
-        
-    }
-
-    private void OnDrawGizmos()
-    {
+        check = Physics2D.BoxCast(transform.position, boxSize, 0, Vector2.zero, 0, targetLayer);
+        Color drawColor = Color.red;
         if (check)
         {
-            Gizmos.color = Color.green;
+            drawColor = Color.green;
         }
-        else
-        {
-            Gizmos.color = Color.red;
-        }
-        Gizmos.DrawWireCube(transform.position, boxSize);
+        Debug.DrawLine(new Vector2(transform.position.x + (transform.position.x - boxSize.x), boxSize.y), boxSize, drawColor);
+        Debug.DrawLine(boxSize, new Vector2(transform.position.x + boxSize.x, transform.position.y + (transform.position.y - boxSize.y)));
+        Debug.DrawLine(new Vector2(transform.position.x + boxSize.x, transform.position.y + (transform.position.y - boxSize.y)), new Vector2(transform.position.x - boxSize.x, transform.position.y - boxSize.y));
+        Debug.DrawLine(new Vector2(transform.position.x + (transform.position.x - boxSize.x), transform.position.y + (transform.position.y - boxSize.y)), new Vector2(transform.position.x - boxSize.x, boxSize.y));
     }
 }
