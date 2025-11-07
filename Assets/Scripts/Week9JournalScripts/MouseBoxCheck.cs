@@ -17,9 +17,9 @@ public class MouseBoxCheck : MonoBehaviour
         {
             drawColor = Color.green;
         }
-        Debug.DrawLine(new Vector2(transform.position.x + (transform.position.x - boxSize.x), boxSize.y), boxSize, drawColor);
-        Debug.DrawLine(boxSize, new Vector2(transform.position.x + boxSize.x, transform.position.y + (transform.position.y - boxSize.y)));
-        Debug.DrawLine(new Vector2(transform.position.x + boxSize.x, transform.position.y + (transform.position.y - boxSize.y)), new Vector2(transform.position.x - boxSize.x, transform.position.y - boxSize.y));
-        Debug.DrawLine(new Vector2(transform.position.x + (transform.position.x - boxSize.x), transform.position.y + (transform.position.y - boxSize.y)), new Vector2(transform.position.x - boxSize.x, boxSize.y));
+        Debug.DrawLine(new Vector2(mousePos.x - boxSize.x / 2, mousePos.y + boxSize.y / 2), mousePos + boxSize / 2, drawColor);
+        Debug.DrawLine(mousePos + boxSize / 2, new Vector2(mousePos.x + boxSize.x / 2, mousePos.y - boxSize.y / 2), drawColor);
+        Debug.DrawLine(new Vector2(mousePos.x + boxSize.x / 2, mousePos.y - boxSize.y / 2), mousePos - boxSize / 2, drawColor);
+        Debug.DrawLine(mousePos - boxSize / 2, new Vector2(mousePos.x - boxSize.x / 2, mousePos.y + boxSize.y / 2), drawColor);
     }
 }
