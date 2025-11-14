@@ -9,9 +9,9 @@ public class PlayerController : MonoBehaviour
         left, right
     }
 
-    bool isWalking, isGrounded = false;
+    bool isWalking, isGrounded = false; //Check player's current state (walking or jumping)
 
-    Rigidbody2D playerRB;
+    Rigidbody2D playerRB; //player's rigidBody reference
 
     // Start is called before the first frame update
     void Start()
@@ -29,13 +29,15 @@ public class PlayerController : MonoBehaviour
         //manage the actual movement of the character.
         //Vector2 playerInput = new Vector2();
 
+
+        //check player input and use it as addForce's basic value
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         float verticaltalInput = Input.GetAxisRaw("Vertical");
-
         Vector2 playerInput = new Vector2(horizontalInput, verticaltalInput);
 
         MovementUpdate(playerInput);
 
+        //I learned from totalForce reference, I use this code to check whether player is walking/jumping
         if(playerRB.totalForce.x != 0)
         {
             isWalking = true;
@@ -73,17 +75,16 @@ public class PlayerController : MonoBehaviour
 
     public FacingDirection GetFacingDirection()
     {
-        FacingDirection direction;
+        FacingDirection direction; //Store player input's direction
+
         if (playerRB.totalForce.x < 0)
         {
-            direction = FacingDirection.left;
+            direction = FacingDirection.left; //left when negative
         }
         else
         {
-            direction = FacingDirection.right;
+            direction = FacingDirection.right; //right when positive
         }
         return direction;
-
-        //return FacingDirection.left;
     }
 }
