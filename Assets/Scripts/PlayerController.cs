@@ -9,37 +9,81 @@ public class PlayerController : MonoBehaviour
         left, right
     }
 
+    bool isWalking, isGrounded = false;
+
+    Rigidbody2D playerRB;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerRB = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        Vector3 rotation = transform.eulerAngles;
+        rotation.z = 0;
+        transform.eulerAngles = rotation;
         //The input from the player needs to be determined and then passed in the to the MovementUpdate which should
         //manage the actual movement of the character.
-        Vector2 playerInput = new Vector2();
+        //Vector2 playerInput = new Vector2();
+
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float verticaltalInput = Input.GetAxisRaw("Vertical");
+
+        Vector2 playerInput = new Vector2(horizontalInput, verticaltalInput);
+
         MovementUpdate(playerInput);
+
+        if(playerRB.totalForce.x != 0)
+        {
+            isWalking = true;
+        }
+        else
+        {
+            isWalking = false;
+        }
+        if(playerRB.totalForce.y != 0)
+        {
+            isGrounded = false;
+        }
+        else
+        {
+            isGrounded = true;
+        }
     }
 
     private void MovementUpdate(Vector2 playerInput)
     {
+        playerRB.AddForce(playerInput);
 
     }
 
     public bool IsWalking()
     {
-        return false;
+        return isWalking;
     }
+
     public bool IsGrounded()
     {
-        return true;
+        return isGrounded;
     }
+
 
     public FacingDirection GetFacingDirection()
     {
-        return FacingDirection.left;
+        FacingDirection direction;
+        if (playerRB.totalForce.x < 0)
+        {
+            direction = FacingDirection.left;
+        }
+        else
+        {
+            direction = FacingDirection.right;
+        }
+        return direction;
+
+        //return FacingDirection.left;
     }
 }
