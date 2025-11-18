@@ -13,13 +13,31 @@ public class PlayerController : MonoBehaviour
 
     Rigidbody2D playerRB; //player's rigidBody reference
 
-    // Start is called before the first frame update
+
+
+    public float apexTime, apexHeight;
+
+    public float gravity, initialJumpVelocity;
+
+    private bool jumpTrigger;
+
+    private float jumpTime = 0;
+
+
+    
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
+
+
+        //Set the gravity
+        gravity = -2 * apexHeight / (Mathf.Pow(apexTime, 2));
+
+        //Set the initial jump velocity
+        initialJumpVelocity = 2 * apexHeight / apexTime;
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         Vector3 rotation = transform.eulerAngles;
@@ -32,8 +50,8 @@ public class PlayerController : MonoBehaviour
 
         //check player input and use it as addForce's basic value
         float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float verticaltalInput = Input.GetAxisRaw("Vertical");
-        Vector2 playerInput = new Vector2(horizontalInput, verticaltalInput);
+        //float verticaltalInput = Input.GetAxisRaw("Vertical");
+        Vector2 playerInput = new Vector2(horizontalInput, 0);
 
         MovementUpdate(playerInput);
 
@@ -54,11 +72,44 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = true;
         }
+
+
+        
     }
+
+
+
+
+
+    private void FixedUpdate()
+    {
+        playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
+
+        if (jumpTrigger)
+        {
+            playerRB.linearVelocityY = initialJumpVelocity;
+        }
+    }
+
+
+
+
 
     private void MovementUpdate(Vector2 playerInput)
     {
         playerRB.AddForce(playerInput);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            jumpTrigger = true;
+            jumpTime += Time.deltaTime;
+
+        }
+        if(jumpTime > apexTime)
+        {
+            jumpTrigger = false;
+            apexTime = 0;
+        }
 
     }
 
