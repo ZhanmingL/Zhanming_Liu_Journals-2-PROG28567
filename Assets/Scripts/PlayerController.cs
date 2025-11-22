@@ -13,26 +13,33 @@ public class PlayerController : MonoBehaviour
 
     Rigidbody2D playerRB; //player's rigidBody reference
 
-    public float velocity;
+    public float velocity; //Player's horizontal moving velocity
 
-    public LayerMask checkGround;
+    public LayerMask checkGround; //Player's raycast is going to find ground tiles - ground tiles are in the checkGround Layer
 
+
+    //Jumping variables
     public float apexTime, apexHeight;
 
     public float gravity, initialJumpVelocity;
 
     private bool jumpTrigger;
 
+    //control player moving horizontally
     float xInput;
 
+    Vector2 playerInput;
+
+    //Jumping terminal speed
     public float terminalSpeed;
 
+    //timer holds coyoteTime
     public float coyoteTime;
     float timer;
 
     void Start()
     {
-        playerRB = GetComponent<Rigidbody2D>();
+        playerRB = GetComponent<Rigidbody2D>(); //reference, directly get
 
 
         //Set the gravity
@@ -45,11 +52,16 @@ public class PlayerController : MonoBehaviour
     
     void Update()
     {
+        //Check everyframe if there is ground tile underneath player
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 1f, checkGround);
+        //return true if there is a ground tile, means player is on the ground
 
+        //Don't rotate the player when collides something
         Vector3 rotation = transform.eulerAngles;
         rotation.z = 0;
         transform.eulerAngles = rotation;
+
+
         //The input from the player needs to be determined and then passed in the to the MovementUpdate which should
         //manage the actual movement of the character.
         //Vector2 playerInput = new Vector2();
@@ -58,12 +70,15 @@ public class PlayerController : MonoBehaviour
         //check player input and use it as addForce's basic value
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         //float verticaltalInput = Input.GetAxisRaw("Vertical");
-        Vector2 playerInput = new Vector2(horizontalInput, 0);
+        playerInput = new Vector2(horizontalInput, 0);
+
 
         MovementUpdate(playerInput);
 
-        //I learned from totalForce reference, I use this code to check whether player is walking/jumping
-        if(playerRB.totalForce.x != 0)
+
+
+        //Check player whether is walking
+        if (playerInput.x != 0)
         {
             isWalking = true;
         }
@@ -71,6 +86,7 @@ public class PlayerController : MonoBehaviour
         {
             isWalking = false;
         }
+
 
         //Debug.DrawLine(transform.position, (Vector2)transform.position + Vector2.down, Color.red);
         //Debug.Log(isGrounded);
@@ -84,16 +100,22 @@ public class PlayerController : MonoBehaviour
     {
         //playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
 
+        //player press space and within coyote time
         if (jumpTrigger)
         {
+            //Give the jump velocity to player rigidbody
             playerRB.linearVelocityY = initialJumpVelocity;
+
+            //Avoid player is receiving jump velocity everyframe - there is no code that sets jump trigger to false. Now set to false
             jumpTrigger = false;
         }
 
-        if(isGrounded == false)
+        if (isGrounded == false)
         {
+            //Due to I have my own gravity, it should apply to player when they are not grounded
             playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
 
+            //The terminal speed makes sure that player's falling speed will not reach a giant amount
             if(playerRB.linearVelocity.y > terminalSpeed)
             {
                 playerRB.linearVelocityY = terminalSpeed;
@@ -113,17 +135,19 @@ public class PlayerController : MonoBehaviour
         xInput = playerInput.x * velocity;
         playerRB.linearVelocityX = xInput;
 
-        if(isGrounded)
+        //Coyote time
+        //If player touches ground, reset coyote time
+        if (isGrounded)
         {
             timer = coyoteTime;
         }
-        else
+        else //if player has no ground tile below, start counting coyote time
         {
             timer -= Time.deltaTime;
         }
 
         //if (Input.GetKeyDown(KeyCode.Space) && isGrounded && coyoteTime < 0)
-        if (Input.GetKeyDown(KeyCode.Space) && timer > 0)
+        if (Input.GetKeyDown(KeyCode.Space) && timer > 0) //coyote time now allows player can jump within this period of time. (rather than bool isGround)
         {
             jumpTrigger = true;
         }
@@ -145,7 +169,7 @@ public class PlayerController : MonoBehaviour
     {
         FacingDirection direction; //Store player input's direction
 
-        if (xInput < 0)
+        if (playerInput.x < 0)
         {
             direction = FacingDirection.left; //left when negative
         }
