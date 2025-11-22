@@ -13,7 +13,9 @@ public class PlayerController : MonoBehaviour
 
     Rigidbody2D playerRB; //player's rigidBody reference
 
+    public float velocity;
 
+    public LayerMask checkGround;
 
     public float apexTime, apexHeight;
 
@@ -21,10 +23,9 @@ public class PlayerController : MonoBehaviour
 
     private bool jumpTrigger;
 
-    private float jumpTime = 0;
+    float xInput;
 
 
-    
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
@@ -40,6 +41,8 @@ public class PlayerController : MonoBehaviour
     
     void Update()
     {
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 1f, checkGround);
+
         Vector3 rotation = transform.eulerAngles;
         rotation.z = 0;
         transform.eulerAngles = rotation;
@@ -64,17 +67,9 @@ public class PlayerController : MonoBehaviour
         {
             isWalking = false;
         }
-        if(playerRB.totalForce.y != 0)
-        {
-            isGrounded = false;
-        }
-        else
-        {
-            isGrounded = true;
-        }
 
-
-        
+        //Debug.DrawLine(transform.position, (Vector2)transform.position + Vector2.down, Color.red);
+        //Debug.Log(isGrounded);
     }
 
 
@@ -83,11 +78,17 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
+        //playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
 
         if (jumpTrigger)
         {
             playerRB.linearVelocityY = initialJumpVelocity;
+            jumpTrigger = false;
+        }
+
+        if(isGrounded == false)
+        {
+            playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
         }
     }
 
@@ -97,18 +98,15 @@ public class PlayerController : MonoBehaviour
 
     private void MovementUpdate(Vector2 playerInput)
     {
-        playerRB.AddForce(playerInput);
+        //playerRB.AddForce(playerInput);
+        xInput = playerRB.linearVelocityX;
+        xInput = playerInput.x * velocity;
+        playerRB.linearVelocityX = xInput;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             jumpTrigger = true;
-            jumpTime += Time.deltaTime;
 
-        }
-        if(jumpTime > apexTime)
-        {
-            jumpTrigger = false;
-            apexTime = 0;
         }
 
     }
@@ -128,7 +126,7 @@ public class PlayerController : MonoBehaviour
     {
         FacingDirection direction; //Store player input's direction
 
-        if (playerRB.totalForce.x < 0)
+        if (xInput < 0)
         {
             direction = FacingDirection.left; //left when negative
         }

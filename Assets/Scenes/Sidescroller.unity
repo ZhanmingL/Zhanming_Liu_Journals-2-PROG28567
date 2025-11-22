@@ -312,7 +312,7 @@ GameObject:
   - component: {fileID: 1054579210}
   - component: {fileID: 1054579209}
   - component: {fileID: 1054579211}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: GroundTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1701,7 +1701,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a1ce42ea3e3dd44868493ae73ec06d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  apexTime: 1
+  velocity: 8
+  checkGround:
+    serializedVersion: 2
+    m_Bits: 8
+  apexTime: 0.3
   apexHeight: 2
   gravity: 0
   initialJumpVelocity: 0
