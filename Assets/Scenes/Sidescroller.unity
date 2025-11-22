@@ -1709,6 +1709,8 @@ MonoBehaviour:
   apexHeight: 2
   gravity: 0
   initialJumpVelocity: 0
+  terminalSpeed: 5
+  coyoteTime: -1
 --- !u!4 &1433354315
 Transform:
   m_ObjectHideFlags: 0

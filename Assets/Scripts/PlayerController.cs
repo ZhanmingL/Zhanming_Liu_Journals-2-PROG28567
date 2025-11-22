@@ -25,6 +25,10 @@ public class PlayerController : MonoBehaviour
 
     float xInput;
 
+    public float terminalSpeed;
+
+    public float coyoteTime;
+
 
     void Start()
     {
@@ -89,6 +93,11 @@ public class PlayerController : MonoBehaviour
         if(isGrounded == false)
         {
             playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
+
+            if(playerRB.linearVelocity.y > terminalSpeed)
+            {
+                playerRB.linearVelocityY = terminalSpeed;
+            }
         }
     }
 
@@ -103,7 +112,17 @@ public class PlayerController : MonoBehaviour
         xInput = playerInput.x * velocity;
         playerRB.linearVelocityX = xInput;
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if(isGrounded)
+        {
+            coyoteTime = -1;
+        }
+
+        if(isGrounded == false)
+        {
+            coyoteTime += Time.deltaTime;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && coyoteTime < 0)
         {
             jumpTrigger = true;
 
