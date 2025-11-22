@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     public float terminalSpeed;
 
     public float coyoteTime;
-
+    float timer;
 
     void Start()
     {
@@ -108,24 +108,24 @@ public class PlayerController : MonoBehaviour
     private void MovementUpdate(Vector2 playerInput)
     {
         //playerRB.AddForce(playerInput);
+        //New player horizontal move:
         xInput = playerRB.linearVelocityX;
         xInput = playerInput.x * velocity;
         playerRB.linearVelocityX = xInput;
 
         if(isGrounded)
         {
-            coyoteTime = -1;
+            timer = coyoteTime;
         }
-
-        if(isGrounded == false)
+        else
         {
-            coyoteTime += Time.deltaTime;
+            timer -= Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && coyoteTime < 0)
+        //if (Input.GetKeyDown(KeyCode.Space) && isGrounded && coyoteTime < 0)
+        if (Input.GetKeyDown(KeyCode.Space) && timer > 0)
         {
             jumpTrigger = true;
-
         }
 
     }
