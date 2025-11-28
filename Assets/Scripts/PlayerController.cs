@@ -30,7 +30,6 @@ public class PlayerController : MonoBehaviour
     public float health;
     public bool hasDied;
 
-    public float velocity; //Player's horizontal moving velocity
 
     public LayerMask checkGround; //Player's raycast is going to find ground tiles - ground tiles are in the checkGround Layer
 
@@ -74,7 +73,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         //Check everyframe if there is ground tile underneath player
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 1f, checkGround);
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 0.8f, checkGround);
         //return true if there is a ground tile, means player is on the ground
 
         //Don't rotate the player when collides something
@@ -98,15 +97,7 @@ public class PlayerController : MonoBehaviour
 
         HasDied();
 
-        //Check player whether is walking
-        if (playerInput.x != 0)
-        {
-            isWalking = true;
-        }
-        else
-        {
-            isWalking = false;
-        }
+        
 
         StateUpdate();
         //Debug.DrawLine(transform.position, (Vector2)transform.position + Vector2.down, Color.red);
@@ -121,27 +112,48 @@ public class PlayerController : MonoBehaviour
     {
         //playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
 
-        //player press space and within coyote time
+        ////player press space and within coyote time
+        //if (jumpTrigger)
+        //{
+        //    //Give the jump velocity to player rigidbody
+        //    playerRB.linearVelocityY = initialJumpVelocity;
+
+        //    //Avoid player is receiving jump velocity everyframe - there is no code that sets jump trigger to false. Now set to false
+        //    jumpTrigger = false;
+        //}
+
+        //if (isGrounded == false)
+        //{
+        //    //Due to I have my own gravity, it should apply to player when they are not grounded
+        //    playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
+
+        //    //The terminal speed makes sure that player's falling speed will not reach a giant amount
+        //    if(playerRB.linearVelocity.y > terminalSpeed)
+        //    {
+        //        playerRB.linearVelocityY = terminalSpeed;
+        //    }
+        //}
+        //Debug.Log(" " + isGrounded + jumpTrigger + isWalking);
+
+        Vector2 velocity = playerRB.linearVelocity;
         if (jumpTrigger)
         {
-            //Give the jump velocity to player rigidbody
-            playerRB.linearVelocityY = initialJumpVelocity;
-
-            //Avoid player is receiving jump velocity everyframe - there is no code that sets jump trigger to false. Now set to false
+            velocity.y = initialJumpVelocity * 30;
             jumpTrigger = false;
         }
-
-        if (isGrounded == false)
+        if (!isGrounded)
         {
-            //Due to I have my own gravity, it should apply to player when they are not grounded
-            playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
-
-            //The terminal speed makes sure that player's falling speed will not reach a giant amount
-            if(playerRB.linearVelocity.y > terminalSpeed)
+            velocity.y = gravity * 30 * Time.fixedDeltaTime;
+            if(velocity.y > terminalSpeed)
             {
-                playerRB.linearVelocityY = terminalSpeed;
+                velocity.y = terminalSpeed;
             }
         }
+
+        playerRB.linearVelocity = velocity;
+
+        Debug.Log(playerRB.linearVelocity);
+
     }
 
     private void StateUpdate()
@@ -172,16 +184,20 @@ public class PlayerController : MonoBehaviour
 
     private void MovementUpdate(Vector2 playerInput)
     {
-        if(playerInput.x != 0)
+        if (playerInput.x != 0)
         {
+            isWalking = true;
+
             currentVelocity += playerInput.x * acceleration * Vector3.right * Time.deltaTime;
             if(Mathf.Abs(currentVelocity.x) > maxSpeed)
             {
-                currentVelocity = new Vector3(Mathf.Sign(currentVelocity.x) * maxSpeed, currentVelocity.x);
+                currentVelocity = new Vector3(Mathf.Sign(currentVelocity.x) * maxSpeed, currentVelocity.y);
             }
         }
         else
         {
+            isWalking = false;
+
             //If there's jump logic, using currentVelocity will cause issues here as the y will contributes to the velocity
             Vector3 amountWantToChange = deceleration * currentVelocity.normalized * Time.deltaTime;
 
@@ -196,6 +212,7 @@ public class PlayerController : MonoBehaviour
         }
 
         playerRB.linearVelocity = currentVelocity;
+        //Debug.Log(currentVelocity);
 
 
         //playerRB.AddForce(playerInput);
@@ -216,7 +233,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //if (Input.GetKeyDown(KeyCode.Space) && isGrounded && coyoteTime < 0)
-        if (Input.GetKeyDown(KeyCode.Space) && timer > 0) //coyote time now allows player can jump within this period of time. (rather than bool isGround)
+        if (Input.GetKeyDown(KeyCode.Space) )//&& timer > 0) //coyote time now allows player can jump within this period of time. (rather than bool isGround)
         {
             jumpTrigger = true;
         }

@@ -33,12 +33,10 @@ public class PlayerVisuals : MonoBehaviour
     //It is not recommended to make changes to the functionality of this code for the W10 journal.
     private void VisualsUpdate()
     {
-        animator.SetBool("IsWalking", playerController.IsWalking());
-        animator.SetBool("IsGrounded", playerController.IsGrounded());
 
         if(playerController.currentState != playerController.previousState)
         {
-            if(playerController.currentState == PlayerController.CharacterState.idle)
+            if (playerController.currentState == PlayerController.CharacterState.idle)
             {
                 animator.Play("Idle");
             }
