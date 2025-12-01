@@ -4,47 +4,56 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    //In which direction that player is currently facing, changed by direction keys input
     public enum FacingDirection
     {
         left, right
     }
 
+    //Player's movement state, updating animation
     public enum CharacterState
     {
         idle, walk, jump, death
     }
 
+    //Initiallize player animation's currentState and previousState. Starting from no moving so that it's idle state.
     public CharacterState currentState = CharacterState.idle;
     public CharacterState previousState = CharacterState.idle;
 
-    bool isWalking, isGrounded = false; //Check player's current state (walking or jumping)
+    bool isWalking, isGrounded = false; //Check player's current motion state (walking or jumping)
 
     Rigidbody2D playerRB; //player's rigidBody reference
 
+    //acclerationTime decides how long acclerate to reach the maxSpeed. decelerationTime goes to zero speed.
     public float maxSpeed;
     public float accelerationTime, decelerationTime;
 
+    //current velocity holds current player's motion depend on rigidBody
     private Vector3 currentVelocity;
     private float acceleration, deceleration;
 
+    
     public float health;
     public bool hasDied;
 
 
+
     public LayerMask checkGround; //Player's raycast is going to find ground tiles - ground tiles are in the checkGround Layer
+
+
 
 
     //Jumping variables
     public float apexTime, apexHeight;
 
     public float gravity, initialJumpVelocity;
-    float initialGravity; //give gravity back when dashing finished
+    float initialGravity; //give gravity back when dashing has finished (I set gravity to zero when dashing)
 
     private bool jumpTrigger;
 
-    //control player moving horizontally
-    float xInput;
 
+
+    //tracks player's horizontal input
     Vector2 playerInput;
 
 
@@ -56,10 +65,12 @@ public class PlayerController : MonoBehaviour
     float timer;
 
 
+    //Dashing variables
     public float dashSpeed;
     bool dashTrigger = false;
     bool canDash = true;
-    bool afterFirstDash = false;
+    bool afterFirstDash = false; //when isGrounded, set canDash to true. But at the beginning player is already isGrounded.
+                                 //So this bool doesn't allow player dash at the beginning.
 
 
 
@@ -78,6 +89,7 @@ public class PlayerController : MonoBehaviour
         //Set the initial jump velocity
         initialJumpVelocity = 2 * apexHeight / apexTime;
 
+        //Calculate acceleration & deceleration amount
         acceleration = maxSpeed / accelerationTime;
         deceleration = maxSpeed / decelerationTime;
     }
@@ -107,6 +119,7 @@ public class PlayerController : MonoBehaviour
 
 
         MovementUpdate(playerInput);
+
 
         HasDied();
 
@@ -156,6 +169,7 @@ public class PlayerController : MonoBehaviour
             //    playerRB.linearVelocityY = terminalSpeed;
             //}
 
+            //Doing dash
             if (dashTrigger)
             {
                 dashTrigger = false;
@@ -196,13 +210,15 @@ public class PlayerController : MonoBehaviour
         {
             isWalking = true;
 
+            //horizontal movement
             currentVelocity += playerInput.x * acceleration * Vector3.right * Time.deltaTime;
+            //Do not want velocity bigger than maxSpeed
             if(Mathf.Abs(currentVelocity.x) > maxSpeed)
             {
                 currentVelocity = new Vector3(Mathf.Sign(currentVelocity.x) * maxSpeed, currentVelocity.y);
             }
         }
-        else
+        else //Decelerate player
         {
             isWalking = false;
 
@@ -223,11 +239,15 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(currentVelocity);
 
 
-        //playerRB.AddForce(playerInput);
-        //New player horizontal move:
-        //xInput = playerRB.linearVelocityX;
-        //xInput = playerInput.x * velocity;
-        //playerRB.linearVelocityX = xInput;
+
+        //My previous horizontal motion
+          //playerRB.AddForce(playerInput);
+          //New player horizontal move:
+          //xInput = playerRB.linearVelocityX;
+          //xInput = playerInput.x * velocity;
+          //playerRB.linearVelocityX = xInput;
+
+
 
         //Coyote time
         //If player touches ground, reset coyote time
@@ -246,11 +266,13 @@ public class PlayerController : MonoBehaviour
             jumpTrigger = true;
         }
 
+        //Due to I only allow player dashing in the air, so isGrounded should be false; there should be a direction-to-move, so there has to be a playerInput value as well.
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && isGrounded == false && playerInput.x != 0)
         {
             dashTrigger = true;
         }
 
+        //After first dash, once player gets ground, allow they dash again
         if (afterFirstDash && isGrounded)
         {
             canDash = true;
@@ -258,6 +280,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    //If health is less than 0, player is dead, playering death animation
     public bool HasDied()
     {
         bool isDead = health <= 0;
@@ -268,6 +291,7 @@ public class PlayerController : MonoBehaviour
         }
         return false;
     }
+
 
     public bool IsWalking()
     {
@@ -295,25 +319,29 @@ public class PlayerController : MonoBehaviour
         return direction;
     }
 
+    //Dashing coroutine -> fixedUpdate
     IEnumerator IsDashing()
     {
+        //Do not dashing again before touching ground
         canDash = false;
 
-        float t = 0;
-        float direction = Mathf.Sign(playerInput.x);
+        float t = 0; //timer -> tracks dashing duration
+        float direction = Mathf.Sign(playerInput.x); //Get current player's facing direction
+
         //currentVelocity.x = direction * dashSpeed;
 
-        gravity = 0;
+        gravity = 0; //Set gravity to 0 when dashing
 
+        //player dashing for 1 second
         while (t < 1)
         {
-            currentVelocity.x = direction * dashSpeed;
-            playerRB.linearVelocity = currentVelocity;
+            currentVelocity.x = direction * dashSpeed; //calculate dashing velocity
+            playerRB.linearVelocity = currentVelocity; //apply dashing velocity
             t += Time.fixedDeltaTime;
             yield return null;
         }
 
-        gravity = initialGravity;
+        gravity = initialGravity; //Set gravity back when finished dashing
 
         afterFirstDash = true;
     }
