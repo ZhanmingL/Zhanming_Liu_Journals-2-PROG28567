@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         //Check everyframe if there is ground tile underneath player
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 1.5f, checkGround);
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 0.95f, checkGround);
         //return true if there is a ground tile, means player is on the ground
 
         //Don't rotate the player when collides something
@@ -116,9 +116,9 @@ public class PlayerController : MonoBehaviour
         if (jumpTrigger)
         {
             //Give the jump velocity to player rigidbody
-            //playerRB.linearVelocityY = initialJumpVelocity;
+            playerRB.linearVelocityY = initialJumpVelocity;
 
-            currentVelocity.y = initialJumpVelocity;
+            currentVelocity.y = playerRB.linearVelocityY;
 
             //Avoid player is receiving jump velocity everyframe - there is no code that sets jump trigger to false. Now set to false
             jumpTrigger = false;
@@ -127,9 +127,11 @@ public class PlayerController : MonoBehaviour
         if (isGrounded == false)
         {
             //Due to I have my own gravity, it should apply to player when they are not grounded
-            //playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
-            currentVelocity.y += gravity * Time.fixedDeltaTime;
+            playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
+            
+            currentVelocity.y = playerRB.linearVelocityY;
 
+            //The terminal speed makes sure that player's falling speed will not reach a giant amount
             if (currentVelocity.y > terminalSpeed)
             {
                 currentVelocity.y = terminalSpeed;
@@ -141,27 +143,6 @@ public class PlayerController : MonoBehaviour
             //    playerRB.linearVelocityY = terminalSpeed;
             //}
         }
-        //Debug.Log(" " + isGrounded + jumpTrigger + isWalking);
-
-        //Vector2 velocity = playerRB.linearVelocity;
-        //if (jumpTrigger)
-        //{
-        //    velocity.y = initialJumpVelocity * 30;
-        //    jumpTrigger = false;
-        //}
-        //if (!isGrounded)
-        //{
-        //    velocity.y = gravity * 30 * Time.fixedDeltaTime;
-        //    if(velocity.y > terminalSpeed)
-        //    {
-        //        velocity.y = terminalSpeed;
-        //    }
-        //}
-
-        //playerRB.linearVelocity = velocity;
-
-        //Debug.Log(playerRB.linearVelocity);
-
     }
 
     private void StateUpdate()
@@ -219,7 +200,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        playerRB.linearVelocity = currentVelocity;
+        playerRB.linearVelocityX = currentVelocity.x;
         //Debug.Log(currentVelocity);
 
 
