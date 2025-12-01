@@ -1718,15 +1718,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   previousState: 0
-  maxSpeed: 3
-  accelerationTime: 1
-  decelerationTime: 1
+  maxSpeed: 5
+  accelerationTime: 0.8
+  decelerationTime: 0.3
   health: 1
   hasDied: 0
   checkGround:
     serializedVersion: 2
     m_Bits: 8
-  apexTime: 1
+  apexTime: 0.3
   apexHeight: 2
   gravity: 0
   initialJumpVelocity: 0
