@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     public float apexTime, apexHeight;
 
     public float gravity, initialJumpVelocity;
+    float initialGravity; //give gravity back when dashing finished
 
     private bool jumpTrigger;
 
@@ -54,6 +55,17 @@ public class PlayerController : MonoBehaviour
     public float coyoteTime;
     float timer;
 
+
+    public float dashSpeed;
+    bool dashTrigger = false;
+    bool canDash = true;
+    bool afterFirstDash = false;
+
+
+
+
+
+
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>(); //reference, directly get
@@ -61,6 +73,7 @@ public class PlayerController : MonoBehaviour
 
         //Set the gravity
         gravity = -2 * apexHeight / (Mathf.Pow(apexTime, 2));
+        initialGravity = gravity; //assign to gravity when dashing coroutine finished
 
         //Set the initial jump velocity
         initialJumpVelocity = 2 * apexHeight / apexTime;
@@ -142,6 +155,12 @@ public class PlayerController : MonoBehaviour
             //{
             //    playerRB.linearVelocityY = terminalSpeed;
             //}
+
+            if (dashTrigger)
+            {
+                dashTrigger = false;
+                StartCoroutine(IsDashing());
+            }
         }
     }
 
@@ -222,9 +241,19 @@ public class PlayerController : MonoBehaviour
         }
 
         //if (Input.GetKeyDown(KeyCode.Space) && isGrounded && coyoteTime < 0)
-        if (Input.GetKeyDown(KeyCode.Space)&& timer > 0) //coyote time now allows player can jump within this period of time. (rather than bool isGround)
+        if (Input.GetKeyDown(KeyCode.Space) && timer > 0) //coyote time now allows player can jump within this period of time. (rather than bool isGround)
         {
             jumpTrigger = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && isGrounded == false && playerInput.x != 0)
+        {
+            dashTrigger = true;
+        }
+
+        if (afterFirstDash && isGrounded)
+        {
+            canDash = true;
         }
 
     }
@@ -264,5 +293,28 @@ public class PlayerController : MonoBehaviour
             direction = FacingDirection.right; //right when positive
         }
         return direction;
+    }
+
+    IEnumerator IsDashing()
+    {
+        canDash = false;
+
+        float t = 0;
+        float direction = Mathf.Sign(playerInput.x);
+        //currentVelocity.x = direction * dashSpeed;
+
+        gravity = 0;
+
+        while (t < 1)
+        {
+            currentVelocity.x = direction * dashSpeed;
+            playerRB.linearVelocity = currentVelocity;
+            t += Time.fixedDeltaTime;
+            yield return null;
+        }
+
+        gravity = initialGravity;
+
+        afterFirstDash = true;
     }
 }
