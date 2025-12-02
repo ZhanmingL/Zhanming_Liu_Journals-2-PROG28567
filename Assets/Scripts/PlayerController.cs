@@ -32,7 +32,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 currentVelocity;
     private float acceleration, deceleration;
 
-    
+
+    //player's death check
     public float health;
     public bool hasDied;
 
@@ -126,13 +127,11 @@ public class PlayerController : MonoBehaviour
         //float verticaltalInput = Input.GetAxisRaw("Vertical");
         playerInput = new Vector2(horizontalInput, 0);
 
-
         MovementUpdate(playerInput);
 
 
         HasDied();
 
-        
 
         StateUpdate();
         //Debug.DrawLine(transform.position, (Vector2)transform.position + Vector2.down, Color.red);
@@ -145,6 +144,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        ///////////////////////////////////////APPLYING JUMP VELOCITY & GRAVITY////////////////////////////////////////////////////////////////////
+        
         //playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
 
         //player press space and within coyote time
@@ -158,7 +159,7 @@ public class PlayerController : MonoBehaviour
             //Avoid player is receiving jump velocity everyframe - there is no code that sets jump trigger to false. Now set to false
             jumpTrigger = false;
 
-            initialJumpVelocity = originalInitialJumpVelocity; //Get back original jump velocity
+            initialJumpVelocity = originalInitialJumpVelocity; //Get back original jump velocity (charging jump changed it)
         }
 
         if (isGrounded == false)
@@ -167,6 +168,7 @@ public class PlayerController : MonoBehaviour
             playerRB.linearVelocityY += gravity * Time.fixedDeltaTime;
             
             currentVelocity.y = playerRB.linearVelocityY;
+
 
             //The terminal speed makes sure that player's falling speed will not reach a giant amount
             if (currentVelocity.y > terminalSpeed)
@@ -180,6 +182,10 @@ public class PlayerController : MonoBehaviour
             //    playerRB.linearVelocityY = terminalSpeed;
             //}
 
+         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
             //Doing dash
             if (dashTrigger)
             {
@@ -187,6 +193,7 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(IsDashing());
             }
 
+            //Doing smash
             if (smashTrigger)
             {
                 smashTrigger = false;
@@ -194,6 +201,10 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+
+
+
 
     private void StateUpdate()
     {
@@ -231,8 +242,11 @@ public class PlayerController : MonoBehaviour
 
 
 
+
+
     private void MovementUpdate(Vector2 playerInput)
     {
+        ///////////////////////////////////////HORIZONTAL MOVEMENT////////////////////////////////////////////////////////////////////////
         if (playerInput.x != 0)
         {
             isWalking = true;
@@ -265,8 +279,6 @@ public class PlayerController : MonoBehaviour
         playerRB.linearVelocityX = currentVelocity.x;
         //Debug.Log(currentVelocity);
 
-
-
         //My previous horizontal motion
           //playerRB.AddForce(playerInput);
           //New player horizontal move:
@@ -274,9 +286,15 @@ public class PlayerController : MonoBehaviour
           //xInput = playerInput.x * velocity;
           //playerRB.linearVelocityX = xInput;
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 
         //Coyote time
+
         //If player touches ground, reset coyote time
         if (isGrounded)
         {
@@ -287,6 +305,12 @@ public class PlayerController : MonoBehaviour
             timer -= Time.deltaTime;
         }
 
+
+
+
+
+
+        ///////////////////////////////////////CHARGING JUMP//////////////////////////////////////////////////////////////////////////////
         Debug.Log(chargingTime);
         //When get SpaceBar key's input, start charging; I also apply coyote time
         if (Input.GetKeyDown(KeyCode.Space) && timer > 0) //coyote time now allows player can jump within this period of time. (rather than bool isGround)
@@ -320,8 +344,12 @@ public class PlayerController : MonoBehaviour
             initialJumpVelocity *= 1.8f; //2.5 times of initialJumpVelocity is quite big, I wanna make it less.
             jumpTrigger = true;
         }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+
+        //Dash Trigger
 
         //Due to I only allow player dashing in the air, so isGrounded should be false; there should be a direction-to-move, so there has to be a playerInput value as well.
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && isGrounded == false && playerInput.x != 0)
@@ -336,6 +364,10 @@ public class PlayerController : MonoBehaviour
         }
 
 
+
+
+        //Smash Trigger
+
         //if player is in the air and press "F"
         if(isGrounded == false && canSmash && Input.GetKeyDown(KeyCode.F))
         {
@@ -343,6 +375,10 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+
+
+
+
 
     //If health is less than 0, player is dead, playering death animation
     public bool HasDied()
@@ -357,6 +393,11 @@ public class PlayerController : MonoBehaviour
     }
 
 
+
+
+
+    //Vertical and horizontal states
+
     public bool IsWalking()
     {
         return isWalking;
@@ -367,6 +408,11 @@ public class PlayerController : MonoBehaviour
         return isGrounded;
     }
 
+
+
+
+
+    //Direction
 
     public FacingDirection GetFacingDirection()
     {
@@ -382,6 +428,19 @@ public class PlayerController : MonoBehaviour
         }
         return direction;
     }
+
+
+
+
+
+
+    ///////////////////////////////////////COROUTINE////////////////////////////////////////////////////////////////////////////////////
+
+
+    //Dash   &   Smash
+
+
+
 
     //Dashing coroutine -> fixedUpdate
     IEnumerator IsDashing()
@@ -409,7 +468,7 @@ public class PlayerController : MonoBehaviour
 
         gravity = initialGravity; //Set gravity back when finished dashing
 
-        isDashing = false;
+        isDashing = false; //animation ends
 
         afterFirstDash = true; //after first dashing, I can set "canDash" to true for each time that player touches ground -> because I don't want player dash more than 1 time within the air
     }
