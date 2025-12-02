@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         //Check everyframe if there is ground tile underneath player
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 0.95f, checkGround);
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 2.5f, checkGround);
         //return true if there is a ground tile, means player is on the ground
 
         //Don't rotate the player when collides something
