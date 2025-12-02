@@ -48,9 +48,12 @@ public class PlayerController : MonoBehaviour
 
     public float gravity, initialJumpVelocity;
     float initialGravity; //give gravity back when dashing has finished (I set gravity to zero when dashing)
+    float originalInitialJumpVelocity; //Due to player's jump can be charged, I have to save the original jump velocity.
 
     private bool jumpTrigger;
-
+    //Jump charging variables
+    bool isCharging;
+    float chargingTime;
 
 
     //tracks player's horizontal input
@@ -73,6 +76,7 @@ public class PlayerController : MonoBehaviour
                                  //So this bool doesn't allow player dash at the beginning.
 
 
+    bool smashTrigger = false;
 
 
 
@@ -88,10 +92,12 @@ public class PlayerController : MonoBehaviour
 
         //Set the initial jump velocity
         initialJumpVelocity = 2 * apexHeight / apexTime;
+        originalInitialJumpVelocity = initialJumpVelocity; //assign to initialJumpVelocity after each charged jump
 
         //Calculate acceleration & deceleration amount
         acceleration = maxSpeed / accelerationTime;
         deceleration = maxSpeed / decelerationTime;
+
     }
 
     
@@ -148,6 +154,8 @@ public class PlayerController : MonoBehaviour
 
             //Avoid player is receiving jump velocity everyframe - there is no code that sets jump trigger to false. Now set to false
             jumpTrigger = false;
+
+            initialJumpVelocity = originalInitialJumpVelocity; //Get back original jump velocity
         }
 
         if (isGrounded == false)
@@ -260,11 +268,41 @@ public class PlayerController : MonoBehaviour
             timer -= Time.deltaTime;
         }
 
-        //if (Input.GetKeyDown(KeyCode.Space) && isGrounded && coyoteTime < 0)
+        Debug.Log(chargingTime);
+        //When get SpaceBar key's input, start charging; I also apply coyote time
         if (Input.GetKeyDown(KeyCode.Space) && timer > 0) //coyote time now allows player can jump within this period of time. (rather than bool isGround)
         {
+            isCharging = true;
+            chargingTime = 0;
+        }
+        //Calculating time during charging
+        if (Input.GetKey(KeyCode.Space) && isCharging)
+        {
+            chargingTime += Time.deltaTime;
+        }
+        //if time is less than 0.2 second, it's like "mouseButtonDown", so it's a normal jump
+        if (Input.GetKeyUp(KeyCode.Space) && chargingTime < 0.2f && isCharging)
+        {
+            isCharging = false; //Stop charging when space bar is released
             jumpTrigger = true;
         }
+        //if time is during 1 and 2, jump 1.5 times of original initialJumpVelocity
+        else if (Input.GetKeyUp(KeyCode.Space) && chargingTime > 1f && chargingTime < 2f && isCharging)
+        {
+            isCharging = false;
+            initialJumpVelocity *= 1.5f; //increase velocity to jump higher
+            jumpTrigger = true;
+        }
+        //Max jump velocity, if holding longger than 2 seconds, jumps 1.8 times height
+        else if (Input.GetKeyUp(KeyCode.Space) && chargingTime > 2f && isCharging)
+        {
+            isCharging = false;
+            //initialJumpVelocity *= 2.5f;
+            initialJumpVelocity *= 1.8f; //2.5 times of initialJumpVelocity is quite big, I wanna make it less.
+            jumpTrigger = true;
+        }
+
+
 
         //Due to I only allow player dashing in the air, so isGrounded should be false; there should be a direction-to-move, so there has to be a playerInput value as well.
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && isGrounded == false && playerInput.x != 0)
@@ -276,6 +314,13 @@ public class PlayerController : MonoBehaviour
         if (afterFirstDash && isGrounded)
         {
             canDash = true;
+        }
+
+
+        //if player is in the air and press "F"
+        if(isGrounded == false && Input.GetKey(KeyCode.F))
+        {
+            smashTrigger = true; //doing downward smashing
         }
 
     }
@@ -343,6 +388,8 @@ public class PlayerController : MonoBehaviour
 
         gravity = initialGravity; //Set gravity back when finished dashing
 
-        afterFirstDash = true;
+        afterFirstDash = true; //after first dashing, I can set "canDash" to true for each time that player touches ground -> because I don't want player dash more than 1 time within the air
     }
+
+    
 }
