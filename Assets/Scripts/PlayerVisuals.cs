@@ -12,7 +12,7 @@ public class PlayerVisuals : MonoBehaviour
     public SpriteRenderer bodyRenderer;
     public PlayerController playerController;
 
-    private int idleHash, walkingHash, jumpingHash, deathHash;
+    private int idleHash, walkingHash, jumpingHash, smashHash, deathHash;
 
     // Start is called before the first frame update
     void Start()
@@ -21,6 +21,7 @@ public class PlayerVisuals : MonoBehaviour
         idleHash = Animator.StringToHash("Idle");
         walkingHash = Animator.StringToHash("IsWalking");
         jumpingHash = Animator.StringToHash("IsGrounded");
+        smashHash = Animator.StringToHash("Smash");
         deathHash = Animator.StringToHash("Death");
     }
 
@@ -33,7 +34,6 @@ public class PlayerVisuals : MonoBehaviour
     //It is not recommended to make changes to the functionality of this code for the W10 journal.
     private void VisualsUpdate()
     {
-
         if(playerController.currentState != playerController.previousState)
         {
             if (playerController.currentState == PlayerController.CharacterState.idle)
@@ -47,6 +47,14 @@ public class PlayerVisuals : MonoBehaviour
             if (playerController.currentState == PlayerController.CharacterState.walk)
             {
                 animator.Play("Walking");
+            }
+            if (playerController.currentState == PlayerController.CharacterState.dash)
+            {
+                animator.Play("Dash");
+            }
+            if (playerController.currentState == PlayerController.CharacterState.smash)
+            {
+                animator.Play("Smash");
             }
         }
 

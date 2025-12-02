@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     //Player's movement state, updating animation
     public enum CharacterState
     {
-        idle, walk, jump, death
+        idle, walk, jump, smash, dash, death
     }
 
     //Initiallize player animation's currentState and previousState. Starting from no moving so that it's idle state.
@@ -72,12 +72,15 @@ public class PlayerController : MonoBehaviour
     public float dashSpeed;
     bool dashTrigger = false;
     bool canDash = true;
+    bool isDashing = false; //for dashing animation
     bool afterFirstDash = false; //when isGrounded, set canDash to true. But at the beginning player is already isGrounded.
                                  //So this bool doesn't allow player dash at the beginning.
 
-
+    //Smashing variables
+    public float smashSpeed;
     bool smashTrigger = false;
-
+    bool canSmash = true;
+    bool isSmashing = false; //for smashing animation
 
 
 
@@ -183,6 +186,12 @@ public class PlayerController : MonoBehaviour
                 dashTrigger = false;
                 StartCoroutine(IsDashing());
             }
+
+            if (smashTrigger)
+            {
+                smashTrigger = false;
+                StartCoroutine(DownWardSmash());
+            }
         }
     }
 
@@ -202,6 +211,16 @@ public class PlayerController : MonoBehaviour
         else
         {
             currentState = CharacterState.idle;
+        }
+
+        if (isDashing)
+        {
+            currentState = CharacterState.dash;
+        }
+
+        if (isSmashing)
+        {
+            currentState = CharacterState.smash;
         }
 
         if (health <= 0)
@@ -318,7 +337,7 @@ public class PlayerController : MonoBehaviour
 
 
         //if player is in the air and press "F"
-        if(isGrounded == false && Input.GetKey(KeyCode.F))
+        if(isGrounded == false && canSmash && Input.GetKeyDown(KeyCode.F))
         {
             smashTrigger = true; //doing downward smashing
         }
@@ -367,6 +386,8 @@ public class PlayerController : MonoBehaviour
     //Dashing coroutine -> fixedUpdate
     IEnumerator IsDashing()
     {
+        isDashing = true; //play animation
+
         //Do not dashing again before touching ground
         canDash = false;
 
@@ -388,8 +409,42 @@ public class PlayerController : MonoBehaviour
 
         gravity = initialGravity; //Set gravity back when finished dashing
 
+        isDashing = false;
+
         afterFirstDash = true; //after first dashing, I can set "canDash" to true for each time that player touches ground -> because I don't want player dash more than 1 time within the air
     }
+    //Smashing Coroutine -> fixedUpdate as well.
+    IEnumerator DownWardSmash()
+    {
+        isSmashing = true; //play animation
 
-    
+        //Only allow player smash once per jump.
+        canSmash = false;
+
+        //In case of charging, player remains the same position, so no gravity and y force.
+        gravity = 0;
+        currentVelocity.y = 0;
+        playerRB.linearVelocityY = 0;
+
+        float t = 0;
+        while (t < 2f) //charging
+        {
+            t += Time.fixedDeltaTime;
+            yield return null;
+        }
+
+        //give gravity back
+        gravity = initialGravity;
+
+        //Charging is finished, now smashing downwards
+        while (!isGrounded) //keep smashing before player hits the ground
+        {
+            playerRB.linearVelocityY = smashSpeed;
+            currentVelocity.y = playerRB.linearVelocityY;
+            yield return null;
+        }
+
+        isSmashing = false;
+        canSmash = true;
+    }
 }

@@ -242,7 +242,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UpdatedSpritesheet (2)_1
+      name: dash
       rect:
         serializedVersion: 2
         x: 71
@@ -726,7 +726,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UpdatedSpritesheet (2)_23
+      name: smash
       rect:
         serializedVersion: 2
         x: 188
@@ -1142,7 +1142,6 @@ TextureImporter:
       Idle1: 763860214524498762
       Idle2: 7138658223858971762
       Idle3: 2267758633517370464
-      UpdatedSpritesheet (2)_1: 1205915593060348334
       UpdatedSpritesheet (2)_10: 2707894699401838585
       UpdatedSpritesheet (2)_11: -4831127246265179389
       UpdatedSpritesheet (2)_12: -5161262577171916787
@@ -1152,7 +1151,6 @@ TextureImporter:
       UpdatedSpritesheet (2)_2: 4399825761434454792
       UpdatedSpritesheet (2)_20: -867035730741460561
       UpdatedSpritesheet (2)_22: 5717981334697866974
-      UpdatedSpritesheet (2)_23: 2276066748391877943
       UpdatedSpritesheet (2)_24: 6401327187442019420
       UpdatedSpritesheet (2)_25: -944001306198253067
       UpdatedSpritesheet (2)_27: -7681064982826922018
@@ -1175,7 +1173,9 @@ TextureImporter:
       Walk2: -8981345513313648513
       Walk3: -1051965848366262971
       Walk4: 8606928534225549676
+      dash: 1205915593060348334
       jump: -2938532474041902764
+      smash: 2276066748391877943
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

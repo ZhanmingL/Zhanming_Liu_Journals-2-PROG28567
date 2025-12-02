@@ -1733,6 +1733,7 @@ MonoBehaviour:
   terminalSpeed: 10
   coyoteTime: 0.1
   dashSpeed: 30
+  smashSpeed: -30
 --- !u!4 &1433354315
 Transform:
   m_ObjectHideFlags: 0

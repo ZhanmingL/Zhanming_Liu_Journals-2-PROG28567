@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: DigWarior_death
+  m_Name: DigWarrior_dash
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,13 +21,7 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 8076426796719745860, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
-    - time: 0.5833333
-      value: {fileID: -5382344799576308650, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
-    - time: 1.1666666
-      value: {fileID: 4342103989373068844, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
-    - time: 1.6666666
-      value: {fileID: 4342103989373068844, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
+      value: {fileID: 1205915593060348334, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -50,16 +44,13 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: 8076426796719745860, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
-    - {fileID: -5382344799576308650, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
-    - {fileID: 4342103989373068844, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
-    - {fileID: 4342103989373068844, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
+    - {fileID: 1205915593060348334, guid: 040f7bd54e3434e4db932d52afdf9df6, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.6833333
+    m_StopTime: 0.016666668
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
